@@ -1,2 +1,2 @@
 # kmeanInWeb
-K-Means implementation on serverless web
+K-Means implementation on web-based client-sided application
