@@ -1,9 +1,7 @@
 const MAX_ITERATIONS = 50;
 
 function randomBetween(min, max) {
-  return Math.floor(
-    Math.random() * (max - min) + min
-  );
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
 function calcMeanCentroid(dataSet, start, end) {
@@ -90,10 +88,10 @@ function getDistanceSQ(a, b) {
   for (let i = 0; i < a.length; i++) {
     diffs.push(a[i] - b[i]);
   }
-  return diffs.reduce((r, e) => (r + (e * e)), 0);
+  return diffs.reduce((r, e) => r + e * e, 0);
 }
 
-// Returns a label for each piece of data in the dataset. 
+// Returns a label for each piece of data in the dataset.
 function getLabels(dataSet, centroids) {
   // prep data structure:
   const labels = {};
@@ -103,7 +101,7 @@ function getLabels(dataSet, centroids) {
       centroid: centroids[c],
     };
   }
-  // For each element in the dataset, choose the closest centroid. 
+  // For each element in the dataset, choose the closest centroid.
   // Make that centroid the element's label.
   for (let i = 0; i < dataSet.length; i++) {
     const a = dataSet[i];
@@ -202,35 +200,55 @@ function kmeans(dataset, k, useNaiveSharding = true) {
     };
     return results;
   } else {
-    throw new Error('Invalid dataset');
+    throw new Error("Invalid dataset");
   }
 }
 
-function runAlgo(){
+function runAlgo() {
   //take input and parse into float
-  let incoming = document.getElementById("data").value
-  let raw = incoming.split("\n")
-  let unparseData = []
-  let parseData = []
+  let incoming = document.getElementById("data").value;
+  let raw = incoming.split("\n");
+  let unparseData = [];
+  let parseData = [];
   for (let i = 0; i < raw.length; i++) {
-    let temp = raw[i].split(",")
-    unparseData.push(temp)
+    let temp = raw[i].split(",");
+    unparseData.push(temp);
   }
   for (let i = 0; i < unparseData.length; i++) {
-    parseData[i]=[]
+    parseData[i] = [];
     for (let j = 0; j < unparseData[i].length; j++) {
-        temp1 = parseFloat(unparseData[i][j])
-        parseData[i].push(temp1)
+      temp1 = parseFloat(unparseData[i][j]);
+      parseData[i].push(temp1);
     }
   }
   //kmean
-  let clusters = document.getElementById("clusters").value
-  clusters = parseInt(clusters)
-  let res = kmeans(parseData,clusters)
-  console.log(res)
+  let clusters = document.getElementById("clusters").value;
+  clusters = parseInt(clusters);
+  let res = kmeans(parseData, clusters);
+  //formating result
+  let formatedRes = [];
+  let tempformatedRes = [];
+  let rowId = 0;
+  for (let i = 0; i < clusters; i++) {
+    for (let j = 0; j < res.clusters[i].points.length; j++) {
+      tempformatedRes = [
+        rowId,
+        res.clusters[i].points[j],
+        res.clusters[i].centroid,
+      ];
+      rowId++;
+      formatedRes.push(tempformatedRes);
+    }
+  }
   //table dom
-  
-  //reveal 
+  while (document.getElementById("table-gridjs").firstChild) {
+    document.getElementById("table-gridjs").removeChild(document.getElementById("table-gridjs").lastChild);
+  }
+  new gridjs.Grid({
+    columns: ["Row Id", "Location", "Centroid"],
+    data: formatedRes,
+  }).render(document.getElementById("table-gridjs"));
+  //reveal
   var x = document.getElementById("ans");
   if (x.style.display === "none") {
     x.style.display = "block";
